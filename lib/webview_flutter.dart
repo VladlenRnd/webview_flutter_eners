@@ -478,7 +478,7 @@ WebSettings _webSettingsFromWidget(WebView widget) {
   return WebSettings(
     javascriptMode: widget.javascriptMode,
     hasNavigationDelegate: widget.navigationDelegate != null,
-    hasProgressTracking: widget.onProgress != null,
+    //hasProgressTracking: widget.onProgress != null,
     // debuggingEnabled: widget.debuggingEnabled,
     //gestureNavigationEnabled: widget.gestureNavigationEnabled,
     // allowsInlineMediaPlayback: widget.allowsInlineMediaPlayback,
@@ -490,7 +490,7 @@ WebSettings _webSettingsFromWidget(WebView widget) {
 WebSettings _clearUnchangedWebSettings(WebSettings currentValue, WebSettings newValue) {
   assert(currentValue.javascriptMode != null);
   assert(currentValue.hasNavigationDelegate != null);
-  assert(currentValue.hasProgressTracking != null);
+  // assert(currentValue.hasProgressTracking != null);
   // assert(currentValue.debuggingEnabled != null);
 
   assert(newValue.javascriptMode != null);
@@ -507,9 +507,9 @@ WebSettings _clearUnchangedWebSettings(WebSettings currentValue, WebSettings new
   if (currentValue.hasNavigationDelegate != newValue.hasNavigationDelegate) {
     hasNavigationDelegate = newValue.hasNavigationDelegate;
   }
-  if (currentValue.hasProgressTracking != newValue.hasProgressTracking) {
-    hasProgressTracking = newValue.hasProgressTracking;
-  }
+  // if (currentValue.hasProgressTracking != newValue.hasProgressTracking) {
+  //   hasProgressTracking = newValue.hasProgressTracking;
+  // }
   // if (currentValue.debuggingEnabled != newValue.debuggingEnabled) {
   //   debuggingEnabled = newValue.debuggingEnabled;
   // }
@@ -517,7 +517,7 @@ WebSettings _clearUnchangedWebSettings(WebSettings currentValue, WebSettings new
   return WebSettings(
     javascriptMode: javascriptMode,
     hasNavigationDelegate: hasNavigationDelegate,
-    hasProgressTracking: hasProgressTracking,
+    //hasProgressTracking: hasProgressTracking,
     //debuggingEnabled: debuggingEnabled,
     //userAgent: userAgent,
   );

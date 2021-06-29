@@ -374,7 +374,7 @@ class WebSettings {
   WebSettings({
     this.javascriptMode,
     this.hasNavigationDelegate,
-    this.hasProgressTracking,
+    //this.hasProgressTracking,
     //this.debuggingEnabled,
     //this.gestureNavigationEnabled,
     //this.allowsInlineMediaPlayback,
@@ -388,7 +388,7 @@ class WebSettings {
 
   /// Whether the [WebView] should track page loading progress.
   /// See also: [WebViewPlatformCallbacksHandler.onProgress] to get the progress.
-  final bool? hasProgressTracking;
+  // final bool? hasProgressTracking;
 
   /// Whether to enable the platform's webview content debugging tools.
   ///
@@ -417,7 +417,7 @@ class WebSettings {
 
   @override
   String toString() {
-    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, hasProgressTracking: $hasProgressTracking)';
+    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate)';
   }
 }
 
