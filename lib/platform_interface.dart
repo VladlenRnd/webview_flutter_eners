@@ -377,7 +377,7 @@ class WebSettings {
     this.hasProgressTracking,
     //this.debuggingEnabled,
     //this.gestureNavigationEnabled,
-    this.allowsInlineMediaPlayback,
+    //this.allowsInlineMediaPlayback,
     required this.userAgent,
   }) : assert(userAgent != null);
 
@@ -399,7 +399,7 @@ class WebSettings {
   /// Whether to play HTML5 videos inline or use the native full-screen controller on iOS.
   ///
   /// This will have no effect on Android.
-  final bool? allowsInlineMediaPlayback;
+  // final bool? allowsInlineMediaPlayback;
 
   /// The value used for the HTTP `User-Agent:` request header.
   ///
@@ -418,7 +418,7 @@ class WebSettings {
 
   @override
   String toString() {
-    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, hasProgressTracking: $hasProgressTracking, userAgent: $userAgent, allowsInlineMediaPlayback: $allowsInlineMediaPlayback)';
+    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, hasProgressTracking: $hasProgressTracking, userAgent: $userAgent)';
   }
 }
 

@@ -481,7 +481,7 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     hasProgressTracking: widget.onProgress != null,
     // debuggingEnabled: widget.debuggingEnabled,
     //gestureNavigationEnabled: widget.gestureNavigationEnabled,
-    allowsInlineMediaPlayback: widget.allowsInlineMediaPlayback,
+    // allowsInlineMediaPlayback: widget.allowsInlineMediaPlayback,
     userAgent: WebSetting<String?>.of(widget.userAgent),
   );
 }
