@@ -473,25 +473,4 @@ NSDictionary<NSString*, id>* settings = args[@"settings"];
   }
 }
 
-- (void)updateUserAgent:(NSString*)userAgent {
-  if (@available(iOS 9.0, *)) {
-    [_webView setCustomUserAgent:userAgent];
-  } else {
-    NSLog(@"Updating UserAgent is not supported for Flutter WebViews prior to iOS 9.");
-  }
-}
-
-#pragma mark WKUIDelegate
-
-- (WKWebView*)webView:(WKWebView*)webView
-    createWebViewWithConfiguration:(WKWebViewConfiguration*)configuration
-               forNavigationAction:(WKNavigationAction*)navigationAction
-                    windowFeatures:(WKWindowFeatures*)windowFeatures {
-  if (!navigationAction.targetFrame.isMainFrame) {
-    [webView loadRequest:navigationAction.request];
-  }
-
-  return nil;
-}
-
 @end
