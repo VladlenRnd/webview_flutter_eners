@@ -1,4 +1,5 @@
-// Copyright 2013 The Flutter Authors. All rights reserved.
+  
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,12 +16,6 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 
 class FlutterCookieManager implements MethodCallHandler {
-  private final MethodChannel methodChannel;
-
-  // FlutterCookieManager(BinaryMessenger messenger) {
-  //   methodChannel = new MethodChannel(messenger, "plugins.flutter.io/cookie_manager");
-  //   methodChannel.setMethodCallHandler(this);
-  // }
 
   private FlutterCookieManager() {
     // Do not instantiate.
@@ -34,7 +29,6 @@ class FlutterCookieManager implements MethodCallHandler {
     methodChannel.setMethodCallHandler(cookieManager);
   }
 
-
   @Override
   public void onMethodCall(MethodCall methodCall, Result result) {
     switch (methodCall.method) {
@@ -45,10 +39,6 @@ class FlutterCookieManager implements MethodCallHandler {
         result.notImplemented();
     }
   }
-
-  // void dispose() {
-  //   methodChannel.setMethodCallHandler(null);
-  // }
 
   private static void clearCookies(final Result result) {
     CookieManager cookieManager = CookieManager.getInstance();
