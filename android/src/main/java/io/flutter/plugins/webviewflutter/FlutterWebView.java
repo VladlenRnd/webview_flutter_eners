@@ -126,7 +126,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     }
 
     Integer autoMediaPlaybackPolicy = (Integer) params.get("autoMediaPlaybackPolicy");
-    if (autoMediaPlaybackPolicy != null) updateAutoMediaPlaybackPolicy(autoMediaPlaybackPolicy);
+   // if (autoMediaPlaybackPolicy != null) updateAutoMediaPlaybackPolicy(autoMediaPlaybackPolicy);
     // if (params.containsKey("userAgent")) {
     //   String userAgent = (String) params.get("userAgent");
     //   updateUserAgent(userAgent);
