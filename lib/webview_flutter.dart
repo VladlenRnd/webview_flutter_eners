@@ -479,7 +479,7 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     javascriptMode: widget.javascriptMode,
     hasNavigationDelegate: widget.navigationDelegate != null,
     hasProgressTracking: widget.onProgress != null,
-    debuggingEnabled: widget.debuggingEnabled,
+    // debuggingEnabled: widget.debuggingEnabled,
     //gestureNavigationEnabled: widget.gestureNavigationEnabled,
     allowsInlineMediaPlayback: widget.allowsInlineMediaPlayback,
     userAgent: WebSetting<String?>.of(widget.userAgent),
@@ -491,11 +491,11 @@ WebSettings _clearUnchangedWebSettings(WebSettings currentValue, WebSettings new
   assert(currentValue.javascriptMode != null);
   assert(currentValue.hasNavigationDelegate != null);
   assert(currentValue.hasProgressTracking != null);
-  assert(currentValue.debuggingEnabled != null);
+  // assert(currentValue.debuggingEnabled != null);
   assert(currentValue.userAgent != null);
   assert(newValue.javascriptMode != null);
   assert(newValue.hasNavigationDelegate != null);
-  assert(newValue.debuggingEnabled != null);
+  // assert(newValue.debuggingEnabled != null);
   assert(newValue.userAgent != null);
 
   JavascriptMode? javascriptMode;
@@ -512,9 +512,9 @@ WebSettings _clearUnchangedWebSettings(WebSettings currentValue, WebSettings new
   if (currentValue.hasProgressTracking != newValue.hasProgressTracking) {
     hasProgressTracking = newValue.hasProgressTracking;
   }
-  if (currentValue.debuggingEnabled != newValue.debuggingEnabled) {
-    debuggingEnabled = newValue.debuggingEnabled;
-  }
+  // if (currentValue.debuggingEnabled != newValue.debuggingEnabled) {
+  //   debuggingEnabled = newValue.debuggingEnabled;
+  // }
   if (currentValue.userAgent != newValue.userAgent) {
     userAgent = newValue.userAgent;
   }
@@ -523,7 +523,7 @@ WebSettings _clearUnchangedWebSettings(WebSettings currentValue, WebSettings new
     javascriptMode: javascriptMode,
     hasNavigationDelegate: hasNavigationDelegate,
     hasProgressTracking: hasProgressTracking,
-    debuggingEnabled: debuggingEnabled,
+    //debuggingEnabled: debuggingEnabled,
     userAgent: userAgent,
   );
 }
