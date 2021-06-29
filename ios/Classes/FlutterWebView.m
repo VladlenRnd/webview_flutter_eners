@@ -1,20 +1,20 @@
-// Copyright 2013 The Flutter Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "FlutterWebView.h"
 #import "FLTWKNavigationDelegate.h"
-#import "FLTWKProgressionDelegate.h"
 #import "JavaScriptChannelHandler.h"
 
 @implementation FLTWebViewFactory {
+  NSObject<FlutterPluginRegistrar>* _registrar;
   NSObject<FlutterBinaryMessenger>* _messenger;
 }
 
 - (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   self = [super init];
   if (self) {
-      _registrar = registrar;
+    _registrar = registrar;
     _messenger = registrar.messenger;
   }
   return self;
@@ -30,33 +30,11 @@
   FLTWebViewController* webviewController = [[FLTWebViewController alloc] initWithFrame:frame
                                                                          viewIdentifier:viewId
                                                                               arguments:args
-                                                                        registrar:_registrar];
+                                                                              registrar:_registrar];
   return webviewController;
 }
 
 @end
-
-// @implementation FLTWKWebView
-
-// - (void)setFrame:(CGRect)frame {
-//   [super setFrame:frame];
-//   self.scrollView.contentInset = UIEdgeInsetsZero;
-//   // We don't want the contentInsets to be adjusted by iOS, flutter should always take control of
-//   // webview's contentInsets.
-//   // self.scrollView.contentInset = UIEdgeInsetsZero;
-//   if (@available(iOS 11, *)) {
-//     // Above iOS 11, adjust contentInset to compensate the adjustedContentInset so the sum will
-//     // always be 0.
-//     if (UIEdgeInsetsEqualToEdgeInsets(self.scrollView.adjustedContentInset, UIEdgeInsetsZero)) {
-//       return;
-//     }
-//     UIEdgeInsets insetToAdjust = self.scrollView.adjustedContentInset;
-//     self.scrollView.contentInset = UIEdgeInsetsMake(-insetToAdjust.top, -insetToAdjust.left,
-//                                                     -insetToAdjust.bottom, -insetToAdjust.right);
-//   }
-// }
-
-// @end
 
 @implementation FLTWebViewController {
   WKWebView* _webView;
@@ -66,8 +44,7 @@
   // The set of registered JavaScript channel names.
   NSMutableSet* _javaScriptChannelNames;
   FLTWKNavigationDelegate* _navigationDelegate;
-   NSObject<FlutterPluginRegistrar>* _registrar;
-  FLTWKProgressionDelegate* _progressionDelegate;
+  NSObject<FlutterPluginRegistrar>* _registrar;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -76,7 +53,7 @@
                     registrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   if ([super init]) {
     _viewId = viewId;
-        _registrar = registrar;
+    _registrar = registrar;
 
     NSString* channelName = [NSString stringWithFormat:@"plugins.flutter.io/webview_%lld", viewId];
     _channel = [FlutterMethodChannel methodChannelWithName:channelName
@@ -90,29 +67,22 @@
       [self registerJavaScriptChannels:_javaScriptChannelNames controller:userContentController];
     }
 
-
     WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
-    [self applyConfigurationSettings:settings toConfiguration:configuration];
     configuration.userContentController = userContentController;
 
-_webView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
+    _webView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
     _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
-    _webView.UIDelegate = self;
     _webView.navigationDelegate = _navigationDelegate;
     __weak __typeof__(self) weakSelf = self;
     [_channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
       [weakSelf onMethodCall:call result:result];
     }];
-
-NSDictionary<NSString*, id>* settings = args[@"settings"];
-
+    NSDictionary<NSString*, id>* settings = args[@"settings"];
     [self applySettings:settings];
-    // TODO(amirh): return an error if apply settings failed once it's possible to do so.
-    // https://github.com/flutter/flutter/issues/36228
 
     NSString* initialUrl = args[@"initialUrl"];
     if ([initialUrl isKindOfClass:[NSString class]]) {
-           if ([initialUrl rangeOfString:@"://"].location == NSNotFound) {
+      if ([initialUrl rangeOfString:@"://"].location == NSNotFound) {
         [self loadAssetFile:initialUrl];
       } else {
         [self loadUrl:initialUrl];
@@ -120,12 +90,6 @@ NSDictionary<NSString*, id>* settings = args[@"settings"];
     }
   }
   return self;
-}
-
-- (void)dealloc {
-  if (_progressionDelegate != nil) {
-    [_progressionDelegate stopObservingProgress:_webView];
-  }
 }
 
 - (UIView*)view {
@@ -137,7 +101,7 @@ NSDictionary<NSString*, id>* settings = args[@"settings"];
     [self onUpdateSettings:call result:result];
   } else if ([[call method] isEqualToString:@"loadUrl"]) {
     [self onLoadUrl:call result:result];
-      } else if ([[call method] isEqualToString:@"loadAssetFile"]) {
+  } else if ([[call method] isEqualToString:@"loadAssetFile"]) {
     [self onLoadAssetFile:call result:result];
   } else if ([[call method] isEqualToString:@"canGoBack"]) {
     [self onCanGoBack:call result:result];
@@ -159,14 +123,6 @@ NSDictionary<NSString*, id>* settings = args[@"settings"];
     [self onRemoveJavaScriptChannels:call result:result];
   } else if ([[call method] isEqualToString:@"clearCache"]) {
     [self clearCache:result];
-  } else if ([[call method] isEqualToString:@"scrollTo"]) {
-    [self onScrollTo:call result:result];
-  } else if ([[call method] isEqualToString:@"scrollBy"]) {
-    [self onScrollBy:call result:result];
-  } else if ([[call method] isEqualToString:@"getScrollX"]) {
-    [self getScrollX:call result:result];
-  } else if ([[call method] isEqualToString:@"getScrollY"]) {
-    [self getScrollY:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -199,15 +155,14 @@ NSDictionary<NSString*, id>* settings = args[@"settings"];
   }
 }
 
-
 - (void)onCanGoBack:(FlutterMethodCall*)call result:(FlutterResult)result {
   BOOL canGoBack = [_webView canGoBack];
-  result(@(canGoBack));
+  result([NSNumber numberWithBool:canGoBack]);
 }
 
 - (void)onCanGoForward:(FlutterMethodCall*)call result:(FlutterResult)result {
   BOOL canGoForward = [_webView canGoForward];
-  result(@(canGoForward));
+  result([NSNumber numberWithBool:canGoForward]);
 }
 
 - (void)onGoBack:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -295,39 +250,6 @@ NSDictionary<NSString*, id>* settings = args[@"settings"];
   }
 }
 
-
-
-- (void)onScrollTo:(FlutterMethodCall*)call result:(FlutterResult)result {
-  NSDictionary* arguments = [call arguments];
-  int x = [arguments[@"x"] intValue];
-  int y = [arguments[@"y"] intValue];
-
-  _webView.scrollView.contentOffset = CGPointMake(x, y);
-  result(nil);
-}
-
-- (void)onScrollBy:(FlutterMethodCall*)call result:(FlutterResult)result {
-  CGPoint contentOffset = _webView.scrollView.contentOffset;
-
-  NSDictionary* arguments = [call arguments];
-  int x = [arguments[@"x"] intValue] + contentOffset.x;
-  int y = [arguments[@"y"] intValue] + contentOffset.y;
-
-  _webView.scrollView.contentOffset = CGPointMake(x, y);
-  result(nil);
-}
-
-- (void)getScrollX:(FlutterMethodCall*)call result:(FlutterResult)result {
-  int offsetX = _webView.scrollView.contentOffset.x;
-  result(@(offsetX));
-}
-
-- (void)getScrollY:(FlutterMethodCall*)call result:(FlutterResult)result {
-  int offsetY = _webView.scrollView.contentOffset.y;
-  result(@(offsetY));
-}
-
-// Returns nil when successful, or an error message when one or more keys are unknown.
 - (void)applySettings:(NSDictionary<NSString*, id>*)settings {
   for (NSString* key in settings) {
     if ([key isEqualToString:@"jsMode"]) {
@@ -336,28 +258,8 @@ NSDictionary<NSString*, id>* settings = args[@"settings"];
     } else if ([key isEqualToString:@"hasNavigationDelegate"]) {
       NSNumber* hasDartNavigationDelegate = settings[key];
       _navigationDelegate.hasDartNavigationDelegate = [hasDartNavigationDelegate boolValue];
-    } else if ([key isEqualToString:@"hasProgressTracking"]) {
-      NSNumber* hasProgressTrackingValue = settings[key];
-      bool hasProgressTracking = [hasProgressTrackingValue boolValue];
-      if (hasProgressTracking) {
-        _progressionDelegate = [[FLTWKProgressionDelegate alloc] initWithWebView:_webView
-                                                                         channel:_channel];
-      }
-
     } else {
       NSLog(@"webview_flutter: unknown setting key: %@", key);
-    }
-  }
-}
-
-- (void)applyConfigurationSettings:(NSDictionary<NSString*, id>*)settings
-                   toConfiguration:(WKWebViewConfiguration*)configuration {
-  NSAssert(configuration != _webView.configuration,
-           @"configuration needs to be updated before webView.configuration.");
-  for (NSString* key in settings) {
-    if ([key isEqualToString:@"allowsInlineMediaPlayback"]) {
-      NSNumber* allowsInlineMediaPlayback = settings[key];
-      configuration.allowsInlineMediaPlayback = [allowsInlineMediaPlayback boolValue];
     }
   }
 }
@@ -376,57 +278,10 @@ NSDictionary<NSString*, id>* settings = args[@"settings"];
   }
 }
 
-- (void)updateAutoMediaPlaybackPolicy:(NSNumber*)policy
-                      inConfiguration:(WKWebViewConfiguration*)configuration {
-  switch ([policy integerValue]) {
-    case 0:  // require_user_action_for_all_media_types
-      if (@available(iOS 10.0, *)) {
-        configuration.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeAll;
-      } else if (@available(iOS 9.0, *)) {
-        configuration.requiresUserActionForMediaPlayback = true;
-      } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        configuration.mediaPlaybackRequiresUserAction = true;
-#pragma clang diagnostic pop
-      }
-      break;
-    case 1:  // always_allow
-      if (@available(iOS 10.0, *)) {
-        configuration.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeNone;
-      } else if (@available(iOS 9.0, *)) {
-        configuration.requiresUserActionForMediaPlayback = false;
-      } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        configuration.mediaPlaybackRequiresUserAction = false;
-#pragma clang diagnostic pop
-      }
-      break;
-    default:
-      NSLog(@"webview_flutter: unknown auto media playback policy: %@", policy);
-  }
-}
-
 - (bool)loadRequest:(NSDictionary<NSString*, id>*)request {
   if (!request) {
     return false;
   }
-
-  - (bool)loadAssetFile:(NSString*)url {
-  NSString* key = [_registrar lookupKeyForAsset:url];
-  NSURL* nsUrl = [[NSBundle mainBundle] URLForResource:key withExtension:nil];
-  if (!nsUrl) {
-    return false;
-  }
-  if (@available(iOS 9.0, *)) {
-    [_webView loadFileURL:nsUrl allowingReadAccessToURL:[NSURL URLWithString:@"file:///"]];
-  } else {
-    return false;
-  }
-  return true;
-}
-
 
   NSString* url = request[@"url"];
   if ([url isKindOfClass:[NSString class]]) {
@@ -453,6 +308,20 @@ NSDictionary<NSString*, id>* settings = args[@"settings"];
   NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:nsUrl];
   [request setAllHTTPHeaderFields:headers];
   [_webView loadRequest:request];
+  return true;
+}
+
+- (bool)loadAssetFile:(NSString*)url {
+  NSString* key = [_registrar lookupKeyForAsset:url];
+  NSURL* nsUrl = [[NSBundle mainBundle] URLForResource:key withExtension:nil];
+  if (!nsUrl) {
+    return false;
+  }
+  if (@available(iOS 9.0, *)) {
+    [_webView loadFileURL:nsUrl allowingReadAccessToURL:[NSURL URLWithString:@"file:///"]];
+  } else {
+    return false;
+  }
   return true;
 }
 

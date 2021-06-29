@@ -10,13 +10,14 @@ gradle.buildFinished { buildResult ->
         rootProject.ext.set(ANDROIDX_WARNING, true);
     }
 }
+
 group 'io.flutter.plugins.webviewflutter'
 version '1.0-SNAPSHOT'
 
 buildscript {
     repositories {
         google()
-        mavenCentral()
+        jcenter()
     }
 
     dependencies {
@@ -27,26 +28,24 @@ buildscript {
 rootProject.allprojects {
     repositories {
         google()
-        mavenCentral()
+        jcenter()
     }
 }
 
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 28
 
     defaultConfig {
-        minSdkVersion 19
+        minSdkVersion 16
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-
     lintOptions {
         disable 'InvalidPackage'
     }
 
     dependencies {
-       // implementation 'androidx.annotation:annotation:1.0.0'
         implementation 'androidx.webkit:webkit:1.0.0'
     }
 }
