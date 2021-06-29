@@ -225,7 +225,7 @@ class WebView extends StatefulWidget {
     this.onWebResourceError,
     this.debuggingEnabled = false,
     // this.gestureNavigationEnabled = false,
-    this.userAgent,
+    // this.userAgent,
     this.initialMediaPlaybackPolicy = AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
     this.allowsInlineMediaPlayback = false,
   })  : assert(javascriptMode != null),
@@ -401,7 +401,7 @@ class WebView extends StatefulWidget {
   /// user agent.
   ///
   /// By default `userAgent` is null.
-  final String? userAgent;
+  //final String? userAgent;
 
   /// Which restrictions apply on automatic media playback.
   ///
@@ -469,7 +469,7 @@ CreationParams _creationParamsfromWidget(WebView widget) {
     initialUrl: widget.initialUrl,
     webSettings: _webSettingsFromWidget(widget),
     javascriptChannelNames: _extractChannelNames(widget.javascriptChannels),
-    userAgent: widget.userAgent,
+    //userAgent: widget.userAgent,
     autoMediaPlaybackPolicy: widget.initialMediaPlaybackPolicy,
   );
 }
@@ -482,7 +482,7 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     // debuggingEnabled: widget.debuggingEnabled,
     //gestureNavigationEnabled: widget.gestureNavigationEnabled,
     // allowsInlineMediaPlayback: widget.allowsInlineMediaPlayback,
-    userAgent: WebSetting<String?>.of(widget.userAgent),
+    // userAgent: WebSetting<String?>.of(widget.userAgent),
   );
 }
 
@@ -492,17 +492,15 @@ WebSettings _clearUnchangedWebSettings(WebSettings currentValue, WebSettings new
   assert(currentValue.hasNavigationDelegate != null);
   assert(currentValue.hasProgressTracking != null);
   // assert(currentValue.debuggingEnabled != null);
-  assert(currentValue.userAgent != null);
+
   assert(newValue.javascriptMode != null);
   assert(newValue.hasNavigationDelegate != null);
   // assert(newValue.debuggingEnabled != null);
-  assert(newValue.userAgent != null);
 
   JavascriptMode? javascriptMode;
   bool? hasNavigationDelegate;
   bool? hasProgressTracking;
   bool? debuggingEnabled;
-  WebSetting<String?> userAgent = WebSetting.absent();
   if (currentValue.javascriptMode != newValue.javascriptMode) {
     javascriptMode = newValue.javascriptMode;
   }
@@ -515,16 +513,13 @@ WebSettings _clearUnchangedWebSettings(WebSettings currentValue, WebSettings new
   // if (currentValue.debuggingEnabled != newValue.debuggingEnabled) {
   //   debuggingEnabled = newValue.debuggingEnabled;
   // }
-  if (currentValue.userAgent != newValue.userAgent) {
-    userAgent = newValue.userAgent;
-  }
 
   return WebSettings(
     javascriptMode: javascriptMode,
     hasNavigationDelegate: hasNavigationDelegate,
     hasProgressTracking: hasProgressTracking,
     //debuggingEnabled: debuggingEnabled,
-    userAgent: userAgent,
+    //userAgent: userAgent,
   );
 }
 

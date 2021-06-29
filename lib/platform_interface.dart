@@ -378,8 +378,7 @@ class WebSettings {
     //this.debuggingEnabled,
     //this.gestureNavigationEnabled,
     //this.allowsInlineMediaPlayback,
-    required this.userAgent,
-  }) : assert(userAgent != null);
+  });
 
   /// The JavaScript execution mode to be used by the webview.
   final JavascriptMode? javascriptMode;
@@ -409,7 +408,7 @@ class WebSettings {
   /// last time it was set.
   ///
   /// See also [WebView.userAgent].
-  final WebSetting<String?> userAgent;
+  // final WebSetting<String?> userAgent;
 
   /// Whether to allow swipe based navigation in iOS.
   ///
@@ -418,7 +417,7 @@ class WebSettings {
 
   @override
   String toString() {
-    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, hasProgressTracking: $hasProgressTracking, userAgent: $userAgent)';
+    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, hasProgressTracking: $hasProgressTracking)';
   }
 }
 
@@ -434,7 +433,6 @@ class CreationParams {
     this.initialUrl,
     this.webSettings,
     this.javascriptChannelNames = const <String>{},
-    this.userAgent,
     this.autoMediaPlaybackPolicy = AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
   }) : assert(autoMediaPlaybackPolicy != null);
 
@@ -464,14 +462,14 @@ class CreationParams {
   /// The value used for the HTTP User-Agent: request header.
   ///
   /// When null the platform's webview default is used for the User-Agent header.
-  final String? userAgent;
+  //final String? userAgent;
 
   /// Which restrictions apply on automatic media playback.
   final AutoMediaPlaybackPolicy autoMediaPlaybackPolicy;
 
   @override
   String toString() {
-    return '$runtimeType(initialUrl: $initialUrl, settings: $webSettings, javascriptChannelNames: $javascriptChannelNames, UserAgent: $userAgent)';
+    return '$runtimeType(initialUrl: $initialUrl, settings: $webSettings, javascriptChannelNames: $javascriptChannelNames)';
   }
 }
 

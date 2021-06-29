@@ -179,7 +179,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
     // _addIfNonNull(
     //     'gestureNavigationEnabled', settings.gestureNavigationEnabled);
     //_addIfNonNull('allowsInlineMediaPlayback', settings.allowsInlineMediaPlayback);
-    _addSettingIfPresent('userAgent', settings.userAgent);
+    // _addSettingIfPresent('userAgent', settings.userAgent);
     return map;
   }
 
@@ -195,7 +195,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       'initialUrl': creationParams.initialUrl,
       'settings': _webSettingsToMap(creationParams.webSettings),
       'javascriptChannelNames': creationParams.javascriptChannelNames.toList(),
-      'userAgent': creationParams.userAgent,
+      //'userAgent': creationParams.userAgent,
       'autoMediaPlaybackPolicy': creationParams.autoMediaPlaybackPolicy.index,
       'usesHybridComposition': usesHybridComposition,
     };
