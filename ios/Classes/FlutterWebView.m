@@ -11,10 +11,11 @@
   NSObject<FlutterBinaryMessenger>* _messenger;
 }
 
-- (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
+- (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   self = [super init];
   if (self) {
-    _messenger = messenger;
+      _registrar = registrar;
+    _messenger = registrar.messenger;
   }
   return self;
 }
@@ -29,54 +30,57 @@
   FLTWebViewController* webviewController = [[FLTWebViewController alloc] initWithFrame:frame
                                                                          viewIdentifier:viewId
                                                                               arguments:args
-                                                                        binaryMessenger:_messenger];
+                                                                        registrar:_registrar];
   return webviewController;
 }
 
 @end
 
-@implementation FLTWKWebView
+// @implementation FLTWKWebView
 
-- (void)setFrame:(CGRect)frame {
-  [super setFrame:frame];
-  self.scrollView.contentInset = UIEdgeInsetsZero;
-  // We don't want the contentInsets to be adjusted by iOS, flutter should always take control of
-  // webview's contentInsets.
-  // self.scrollView.contentInset = UIEdgeInsetsZero;
-  if (@available(iOS 11, *)) {
-    // Above iOS 11, adjust contentInset to compensate the adjustedContentInset so the sum will
-    // always be 0.
-    if (UIEdgeInsetsEqualToEdgeInsets(self.scrollView.adjustedContentInset, UIEdgeInsetsZero)) {
-      return;
-    }
-    UIEdgeInsets insetToAdjust = self.scrollView.adjustedContentInset;
-    self.scrollView.contentInset = UIEdgeInsetsMake(-insetToAdjust.top, -insetToAdjust.left,
-                                                    -insetToAdjust.bottom, -insetToAdjust.right);
-  }
-}
+// - (void)setFrame:(CGRect)frame {
+//   [super setFrame:frame];
+//   self.scrollView.contentInset = UIEdgeInsetsZero;
+//   // We don't want the contentInsets to be adjusted by iOS, flutter should always take control of
+//   // webview's contentInsets.
+//   // self.scrollView.contentInset = UIEdgeInsetsZero;
+//   if (@available(iOS 11, *)) {
+//     // Above iOS 11, adjust contentInset to compensate the adjustedContentInset so the sum will
+//     // always be 0.
+//     if (UIEdgeInsetsEqualToEdgeInsets(self.scrollView.adjustedContentInset, UIEdgeInsetsZero)) {
+//       return;
+//     }
+//     UIEdgeInsets insetToAdjust = self.scrollView.adjustedContentInset;
+//     self.scrollView.contentInset = UIEdgeInsetsMake(-insetToAdjust.top, -insetToAdjust.left,
+//                                                     -insetToAdjust.bottom, -insetToAdjust.right);
+//   }
+// }
 
-@end
+// @end
 
 @implementation FLTWebViewController {
-  FLTWKWebView* _webView;
+  WKWebView* _webView;
   int64_t _viewId;
   FlutterMethodChannel* _channel;
   NSString* _currentUrl;
   // The set of registered JavaScript channel names.
   NSMutableSet* _javaScriptChannelNames;
   FLTWKNavigationDelegate* _navigationDelegate;
+   NSObject<FlutterPluginRegistrar>* _registrar;
   FLTWKProgressionDelegate* _progressionDelegate;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
-              binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
-  if (self = [super init]) {
+                    registrar:(NSObject<FlutterPluginRegistrar>*)registrar {
+  if ([super init]) {
     _viewId = viewId;
+        _registrar = registrar;
 
     NSString* channelName = [NSString stringWithFormat:@"plugins.flutter.io/webview_%lld", viewId];
-    _channel = [FlutterMethodChannel methodChannelWithName:channelName binaryMessenger:messenger];
+    _channel = [FlutterMethodChannel methodChannelWithName:channelName
+                                           binaryMessenger:registrar.messenger];
     _javaScriptChannelNames = [[NSMutableSet alloc] init];
 
     WKUserContentController* userContentController = [[WKUserContentController alloc] init];
@@ -86,15 +90,12 @@
       [self registerJavaScriptChannels:_javaScriptChannelNames controller:userContentController];
     }
 
-    NSDictionary<NSString*, id>* settings = args[@"settings"];
 
     WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
     [self applyConfigurationSettings:settings toConfiguration:configuration];
     configuration.userContentController = userContentController;
-    [self updateAutoMediaPlaybackPolicy:args[@"autoMediaPlaybackPolicy"]
-                        inConfiguration:configuration];
 
-    _webView = [[FLTWKWebView alloc] initWithFrame:frame configuration:configuration];
+_webView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
     _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
     _webView.UIDelegate = self;
     _webView.navigationDelegate = _navigationDelegate;
@@ -103,12 +104,7 @@
       [weakSelf onMethodCall:call result:result];
     }];
 
-    if (@available(iOS 11.0, *)) {
-      _webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-      if (@available(iOS 13.0, *)) {
-        _webView.scrollView.automaticallyAdjustsScrollIndicatorInsets = NO;
-      }
-    }
+NSDictionary<NSString*, id>* settings = args[@"settings"];
 
     [self applySettings:settings];
     // TODO(amirh): return an error if apply settings failed once it's possible to do so.
@@ -116,7 +112,11 @@
 
     NSString* initialUrl = args[@"initialUrl"];
     if ([initialUrl isKindOfClass:[NSString class]]) {
-      [self loadUrl:initialUrl];
+           if ([initialUrl rangeOfString:@"://"].location == NSNotFound) {
+        [self loadAssetFile:initialUrl];
+      } else {
+        [self loadUrl:initialUrl];
+      }
     }
   }
   return self;
@@ -137,6 +137,8 @@
     [self onUpdateSettings:call result:result];
   } else if ([[call method] isEqualToString:@"loadUrl"]) {
     [self onLoadUrl:call result:result];
+      } else if ([[call method] isEqualToString:@"loadAssetFile"]) {
+    [self onLoadAssetFile:call result:result];
   } else if ([[call method] isEqualToString:@"canGoBack"]) {
     [self onCanGoBack:call result:result];
   } else if ([[call method] isEqualToString:@"canGoForward"]) {
@@ -157,8 +159,6 @@
     [self onRemoveJavaScriptChannels:call result:result];
   } else if ([[call method] isEqualToString:@"clearCache"]) {
     [self clearCache:result];
-  } else if ([[call method] isEqualToString:@"getTitle"]) {
-    [self onGetTitle:result];
   } else if ([[call method] isEqualToString:@"scrollTo"]) {
     [self onScrollTo:call result:result];
   } else if ([[call method] isEqualToString:@"scrollBy"]) {
@@ -173,12 +173,8 @@
 }
 
 - (void)onUpdateSettings:(FlutterMethodCall*)call result:(FlutterResult)result {
-  NSString* error = [self applySettings:[call arguments]];
-  if (error == nil) {
-    result(nil);
-    return;
-  }
-  result([FlutterError errorWithCode:@"updateSettings_failed" message:error details:nil]);
+  [self applySettings:[call arguments]];
+  result(nil);
 }
 
 - (void)onLoadUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -191,6 +187,18 @@
     result(nil);
   }
 }
+
+- (void)onLoadAssetFile:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSString* url = [call arguments];
+  if (![self loadAssetFile:url]) {
+    result([FlutterError errorWithCode:@"loadAssetFile_failed"
+                               message:@"Failed parsing the URL"
+                               details:[NSString stringWithFormat:@"URL was: '%@'", url]]);
+  } else {
+    result(nil);
+  }
+}
+
 
 - (void)onCanGoBack:(FlutterMethodCall*)call result:(FlutterResult)result {
   BOOL canGoBack = [_webView canGoBack];
@@ -287,10 +295,7 @@
   }
 }
 
-- (void)onGetTitle:(FlutterResult)result {
-  NSString* title = _webView.title;
-  result(title);
-}
+
 
 - (void)onScrollTo:(FlutterMethodCall*)call result:(FlutterResult)result {
   NSDictionary* arguments = [call arguments];
@@ -323,8 +328,7 @@
 }
 
 // Returns nil when successful, or an error message when one or more keys are unknown.
-- (NSString*)applySettings:(NSDictionary<NSString*, id>*)settings {
-  NSMutableArray<NSString*>* unknownKeys = [[NSMutableArray alloc] init];
+- (void)applySettings:(NSDictionary<NSString*, id>*)settings {
   for (NSString* key in settings) {
     if ([key isEqualToString:@"jsMode"]) {
       NSNumber* mode = settings[key];
@@ -339,24 +343,11 @@
         _progressionDelegate = [[FLTWKProgressionDelegate alloc] initWithWebView:_webView
                                                                          channel:_channel];
       }
-    } else if ([key isEqualToString:@"debuggingEnabled"]) {
-      // no-op debugging is always enabled on iOS.
-    } else if ([key isEqualToString:@"gestureNavigationEnabled"]) {
-      NSNumber* allowsBackForwardNavigationGestures = settings[key];
-      _webView.allowsBackForwardNavigationGestures =
-          [allowsBackForwardNavigationGestures boolValue];
-    } else if ([key isEqualToString:@"userAgent"]) {
-      NSString* userAgent = settings[key];
-      [self updateUserAgent:[userAgent isEqual:[NSNull null]] ? nil : userAgent];
+
     } else {
-      [unknownKeys addObject:key];
+      NSLog(@"webview_flutter: unknown setting key: %@", key);
     }
   }
-  if ([unknownKeys count] == 0) {
-    return nil;
-  }
-  return [NSString stringWithFormat:@"webview_flutter: unknown setting keys: {%@}",
-                                    [unknownKeys componentsJoinedByString:@", "]];
 }
 
 - (void)applyConfigurationSettings:(NSDictionary<NSString*, id>*)settings
@@ -421,6 +412,21 @@
   if (!request) {
     return false;
   }
+
+  - (bool)loadAssetFile:(NSString*)url {
+  NSString* key = [_registrar lookupKeyForAsset:url];
+  NSURL* nsUrl = [[NSBundle mainBundle] URLForResource:key withExtension:nil];
+  if (!nsUrl) {
+    return false;
+  }
+  if (@available(iOS 9.0, *)) {
+    [_webView loadFileURL:nsUrl allowingReadAccessToURL:[NSURL URLWithString:@"file:///"]];
+  } else {
+    return false;
+  }
+  return true;
+}
+
 
   NSString* url = request[@"url"];
   if ([url isKindOfClass:[NSString class]]) {

@@ -17,10 +17,23 @@ import io.flutter.plugin.common.MethodChannel.Result;
 class FlutterCookieManager implements MethodCallHandler {
   private final MethodChannel methodChannel;
 
-  FlutterCookieManager(BinaryMessenger messenger) {
-    methodChannel = new MethodChannel(messenger, "plugins.flutter.io/cookie_manager");
-    methodChannel.setMethodCallHandler(this);
+  // FlutterCookieManager(BinaryMessenger messenger) {
+  //   methodChannel = new MethodChannel(messenger, "plugins.flutter.io/cookie_manager");
+  //   methodChannel.setMethodCallHandler(this);
+  // }
+
+  private FlutterCookieManager() {
+    // Do not instantiate.
+    // This class should only be used in context of a BinaryMessenger.
+    // Use FlutterCookieManager#registerWith instead.
   }
+
+  static void registerWith(BinaryMessenger messenger) {
+    MethodChannel methodChannel = new MethodChannel(messenger, "plugins.flutter.io/cookie_manager");
+    FlutterCookieManager cookieManager = new FlutterCookieManager();
+    methodChannel.setMethodCallHandler(cookieManager);
+  }
+
 
   @Override
   public void onMethodCall(MethodCall methodCall, Result result) {
@@ -33,9 +46,9 @@ class FlutterCookieManager implements MethodCallHandler {
     }
   }
 
-  void dispose() {
-    methodChannel.setMethodCallHandler(null);
-  }
+  // void dispose() {
+  //   methodChannel.setMethodCallHandler(null);
+  // }
 
   private static void clearCookies(final Result result) {
     CookieManager cookieManager = CookieManager.getInstance();

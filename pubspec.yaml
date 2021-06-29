@@ -11,11 +11,9 @@ environment:
 flutter:
   plugin:
     platforms:
-      android:
-        package: io.flutter.plugins.webviewflutter
-        pluginClass: WebViewFlutterPlugin
-      ios:
-        pluginClass: FLTWebViewFlutterPlugin
+      androidPackage: io.flutter.plugins.webviewflutter
+      iosPrefix: FLT
+      pluginClass: WebViewFlutterPlugin
 
 dependencies:
   flutter:

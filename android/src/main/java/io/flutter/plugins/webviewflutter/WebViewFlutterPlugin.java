@@ -4,18 +4,12 @@
 
 package io.flutter.plugins.webviewflutter;
 
-import io.flutter.embedding.engine.plugins.FlutterPlugin;
-import io.flutter.plugin.common.BinaryMessenger;
+// import io.flutter.embedding.engine.plugins.FlutterPlugin;
+// import io.flutter.plugin.common.BinaryMessenger;
 
-/**
- * Java platform implementation of the webview_flutter plugin.
- *
- * <p>Register this in an add to app scenario to gracefully handle activity and context changes.
- *
- * <p>Call {@link #registerWith(Registrar)} to use the stable {@code io.flutter.plugin.common}
- * package instead.
- */
-public class WebViewFlutterPlugin implements FlutterPlugin {
+
+ /** WebViewFlutterPlugin */
+public class WebViewFlutterPlugin  {
 
   private FlutterCookieManager flutterCookieManager;
 
@@ -31,7 +25,12 @@ public class WebViewFlutterPlugin implements FlutterPlugin {
    * <p>Registration should eventually be handled automatically by v2 of the
    * GeneratedPluginRegistrant. https://github.com/flutter/flutter/issues/42694
    */
-  public WebViewFlutterPlugin() {}
+  public static void registerWith(Registrar registrar) {
+    registrar
+        .platformViewRegistry()
+        .registerViewFactory("plugins.flutter.io/webview", new WebViewFactory(registrar.messenger()));
+    FlutterCookieManager.registerWith(registrar.messenger());
+    }
 
   /**
    * Registers a plugin implementation that uses the stable {@code io.flutter.plugin.common}
@@ -40,33 +39,34 @@ public class WebViewFlutterPlugin implements FlutterPlugin {
    * <p>Calling this automatically initializes the plugin. However plugins initialized this way
    * won't react to changes in activity or context, unlike {@link CameraPlugin}.
    */
-  @SuppressWarnings("deprecation")
-  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
-    registrar
-        .platformViewRegistry()
-        .registerViewFactory(
-            "plugins.flutter.io/webview",
-            new WebViewFactory(registrar.messenger(), registrar.view()));
-    new FlutterCookieManager(registrar.messenger());
-  }
+  // @SuppressWarnings("deprecation")
+  // public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
+  //   registrar
+  //       .platformViewRegistry()
+  //       .registerViewFactory(
+  //           "plugins.flutter.io/webview",
+  //           new WebViewFactory(registrar.messenger(), registrar.view()));
+  //   new FlutterCookieManager(registrar.messenger());
+  // }
 
-  @Override
-  public void onAttachedToEngine(FlutterPluginBinding binding) {
-    BinaryMessenger messenger = binding.getBinaryMessenger();
-    binding
-        .getPlatformViewRegistry()
-        .registerViewFactory(
-            "plugins.flutter.io/webview", new WebViewFactory(messenger, /*containerView=*/ null));
-    flutterCookieManager = new FlutterCookieManager(messenger);
-  }
+  // @Override
+  // public void onAttachedToEngine(FlutterPluginBinding binding) {
+  //   BinaryMessenger messenger = binding.getBinaryMessenger();
+  //   binding
+  //       .getPlatformViewRegistry()
+  //       .registerViewFactory(
+  //           "plugins.flutter.io/webview", new WebViewFactory(messenger, /*containerView=*/ null));
+  //   flutterCookieManager = new FlutterCookieManager(messenger);
+  // }
 
-  @Override
-  public void onDetachedFromEngine(FlutterPluginBinding binding) {
-    if (flutterCookieManager == null) {
-      return;
-    }
+  // @Override
+  // public void onDetachedFromEngine(FlutterPluginBinding binding) {
+  //   if (flutterCookieManager == null) {
+  //     return;
+  //   }
 
-    flutterCookieManager.dispose();
-    flutterCookieManager = null;
-  }
+  //   flutterCookieManager.dispose();
+  //   flutterCookieManager = null;
+  // }
+
 }

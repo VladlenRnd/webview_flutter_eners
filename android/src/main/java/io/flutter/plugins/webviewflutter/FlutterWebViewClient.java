@@ -6,10 +6,10 @@ package io.flutter.plugins.webviewflutter;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.graphics.Bitmap;
+//import android.graphics.Bitmap;
 import android.os.Build;
 import android.util.Log;
-import android.view.KeyEvent;
+//import android.view.KeyEvent;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -18,6 +18,7 @@ import androidx.annotation.RequiresApi;
 import androidx.webkit.WebResourceErrorCompat;
 import androidx.webkit.WebViewClientCompat;
 import io.flutter.plugin.common.MethodChannel;
+import androidx.annotation.NonNull;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -114,11 +115,11 @@ class FlutterWebViewClient {
     return true;
   }
 
-  private void onPageStarted(WebView view, String url) {
-    Map<String, Object> args = new HashMap<>();
-    args.put("url", url);
-    methodChannel.invokeMethod("onPageStarted", args);
-  }
+  // private void onPageStarted(WebView view, String url) {
+  //   Map<String, Object> args = new HashMap<>();
+  //   args.put("url", url);
+  //   methodChannel.invokeMethod("onPageStarted", args);
+  // }
 
   private void onPageFinished(WebView view, String url) {
     Map<String, Object> args = new HashMap<>();
@@ -178,10 +179,10 @@ class FlutterWebViewClient {
         return FlutterWebViewClient.this.shouldOverrideUrlLoading(view, request);
       }
 
-      @Override
-      public void onPageStarted(WebView view, String url, Bitmap favicon) {
-        FlutterWebViewClient.this.onPageStarted(view, url);
-      }
+      // @Override
+      // public void onPageStarted(WebView view, String url, Bitmap favicon) {
+      //   FlutterWebViewClient.this.onPageStarted(view, url);
+      // }
 
       @Override
       public void onPageFinished(WebView view, String url) {
@@ -202,19 +203,19 @@ class FlutterWebViewClient {
         FlutterWebViewClient.this.onWebResourceError(errorCode, description, failingUrl);
       }
 
-      @Override
-      public void onUnhandledKeyEvent(WebView view, KeyEvent event) {
-        // Deliberately empty. Occasionally the webview will mark events as having failed to be
-        // handled even though they were handled. We don't want to propagate those as they're not
-        // truly lost.
-      }
+      // @Override
+      // public void onUnhandledKeyEvent(WebView view, KeyEvent event) {
+      //   // Deliberately empty. Occasionally the webview will mark events as having failed to be
+      //   // handled even though they were handled. We don't want to propagate those as they're not
+      //   // truly lost.
+      // }
     };
   }
 
   private WebViewClientCompat internalCreateWebViewClientCompat() {
     return new WebViewClientCompat() {
       @Override
-      public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+      public boolean shouldOverrideUrlLoading(@NonNull WebView view, @NonNull WebResourceRequest request) {
         return FlutterWebViewClient.this.shouldOverrideUrlLoading(view, request);
       }
 
@@ -223,10 +224,10 @@ class FlutterWebViewClient {
         return FlutterWebViewClient.this.shouldOverrideUrlLoading(view, url);
       }
 
-      @Override
-      public void onPageStarted(WebView view, String url, Bitmap favicon) {
-        FlutterWebViewClient.this.onPageStarted(view, url);
-      }
+      // @Override
+      // public void onPageStarted(WebView view, String url, Bitmap favicon) {
+      //   FlutterWebViewClient.this.onPageStarted(view, url);
+      // }
 
       @Override
       public void onPageFinished(WebView view, String url) {
@@ -250,12 +251,12 @@ class FlutterWebViewClient {
         FlutterWebViewClient.this.onWebResourceError(errorCode, description, failingUrl);
       }
 
-      @Override
-      public void onUnhandledKeyEvent(WebView view, KeyEvent event) {
-        // Deliberately empty. Occasionally the webview will mark events as having failed to be
-        // handled even though they were handled. We don't want to propagate those as they're not
-        // truly lost.
-      }
+      // @Override
+      // public void onUnhandledKeyEvent(WebView view, KeyEvent event) {
+      //   // Deliberately empty. Occasionally the webview will mark events as having failed to be
+      //   // handled even though they were handled. We don't want to propagate those as they're not
+      //   // truly lost.
+      // }
     };
   }
 
